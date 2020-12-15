@@ -9,6 +9,17 @@ output:
 ## Loading and preprocessing the data
 
 
+```{r}
+library(ggplot2)
+
+activity <- read.csv("G://data/activity.csv")
+
+activity$date <- as.POSIXct(activity$date, "%Y-%m-%d")
+weekday <- weekdays(activity$date)
+activity <- cbind(activity,weekday)
+
+summary(activity)
+```
 
 ## What is mean total number of steps taken per day?
 
