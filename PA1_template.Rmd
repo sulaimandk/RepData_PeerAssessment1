@@ -1,1 +1,136 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+
+## Loading and preprocessing the data
+
+```{r}
+unzip("repdata_data_activity.zip")
+data <- read.csv("activity.csv")
+```
+
+
+## What is mean total number of steps taken per day?
+
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+
+```{r}
+total_steps <- data %>%
+  group_by(date) %>%
+  summarise(daily_steps = sum(steps, na.rm = TRUE))
+
+ggplot(total_steps, aes(daily_steps)) + geom_histogram(binwidth = 2000) +
+  xlab("Total number of steps taken each day") + 
+  ylab("Frequency")
+```
+
+```{r}
+mean = mean(total_steps$daily_steps, na.rm=TRUE)
+mean
+```
+```{r}
+median = median(total_steps$daily_steps, na.rm=TRUE)
+median
+```
+
+
+## What is the average daily activity pattern?
+
+```{r}
+interval_steps <- data %>% 
+  group_by(interval) %>%
+  summarise(steps = mean(steps, na.rm =TRUE))
+
+ggplot(data=interval_steps, aes(x=interval, y=steps)) +
+    geom_line() +
+    xlab("5-minute intervals") +
+    ylab("Average number of steps taken")
+```
+
+
+## Imputing missing values
+
+```{r}
+missing <- sum(!complete.cases(data))
+missing
+```
+
+```{r}
+imputed_data <- data %>%
+  mutate(
+    steps = case_when(
+      is.na(steps) ~ interval_steps$steps[match(data$interval, interval_steps$interval)],      
+      TRUE ~ as.numeric(steps)
+    ))
+```
+
+```{r}
+imputed_total_steps <- imputed_data %>% group_by(date) %>% summarise(daily_steps = sum(steps))
+
+ggplot(imputed_total_steps, aes(daily_steps)) + 
+  geom_histogram(binwidth = 2000) + 
+  xlab("Total number of steps taken each day") + 
+  ylab("Frequency")
+```
+
+```{r}
+imputed_mean = mean(imputed_total_steps$daily_steps, na.rm=TRUE)
+imputed_mean
+```
+
+```{r}
+imputed_median = median(imputed_total_steps$daily_steps, na.rm=TRUE)
+imputed_median
+```
+
+```{r}
+mean_diff <- imputed_mean - mean
+mean_diff
+```
+
+```{r}
+median_diff <- imputed_median - median
+median_diff
+```
+
+
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+```{r}
+
+```
+
+```{r}
+library(lubridate)
+```
+
+```{r}
+day_of_week <- imputed_data %>%
+  mutate(
+    date = ymd(date),
+    weekday_or_weekend = case_when(wday(date) %in% 2:6 ~ "Weekday",
+                                   wday(date) %in% c(1,7) ~ "Weekend")
+  ) %>% select(-date) %>%
+  group_by(interval, weekday_or_weekend) %>%
+  summarise(
+    steps = mean(steps)
+  )
+```
+
+```{r}
+ggplot(day_of_week, aes(interval, steps)) + 
+  geom_line() + 
+  facet_wrap(~weekday_or_weekend, nrow = 2) +
+  xlab("5-Minute intervals") + 
+  ylab("Average number of steps")
+```
 
