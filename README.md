@@ -1,3 +1,10 @@
+# Markdown
+[Reproducible Research Project 1 (.md)](https://github.com/sulaimandk/RepData_PeerAssessment1/blob/master/PA1_template.md)
+
+# R Markdown
+[Reproducible Research Project 1 (.Rmd)](https://github.com/sulaimandk/RepData_PeerAssessment1/blob/master/PA1_template.Rmd)
+
+
 ## Introduction
 
 It is now possible to collect a large amount of data about personal
